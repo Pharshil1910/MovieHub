@@ -1,0 +1,169 @@
+﻿@model WebApplication1.Models.Movie
+
+@{
+    ViewData["Title"] = "Edit";
+    var actorListData = ViewBag.ActorList;
+    var producerListData = ViewBag.ProducerId;
+}
+
+<h1>Edit</h1>
+
+<h4>Movie</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" id="MovieId" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" id="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ProducerId" class="control-label"></label>
+                <select asp-for="ProducerId" id="ProducerId" class="form-control" asp-items="producerListData"></select>
+                <span asp-validation-for="ProducerId" class="text-danger"></span>
+            </div>
+
+            <label class="control-label">Actor</label>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Select Actors
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    @{
+                        // var selectedActors = ViewBag.movieWithActors;
+                        // bool IfActormatch = true;
+                        // List<string> PrintedActors = [];
+                        // foreach (var actorList in actorListData)
+                        // {
+                        //     IfActormatch = true;
+                        //     if (selectedActors != null)
+                        //     {
+                        //         foreach (var selectedActor in selectedActors)
+                        //          {
+                        //             if (actorList.Value == selectedActor.ToString() && IfActormatch == true)
+                        //             {
+                        //                     <div class="form-check" style="margin-left: 10px;">
+                        //                         <input class="form-check-input" type="checkbox" id="chk-@actorList.Text" name="selectedActors" value="@actorList.Value" checked>
+                        //                         <label class="form-check-label" for="chk-@actorList.Text">@actorList.Text</label>
+                        //                 </div>
+                        //                 PrintedActors.Add(selectedActor.ToString());
+                        //                 IfActormatch = false;
+                        //             } else
+                        //             {
+                        //                 bool letActorPrint = false;
+                        //                 foreach (var item in PrintedActors)
+                        //                 {
+                        //                     if (actorList.Value == item)
+                        //                     {
+                        //                         letActorPrint = false;
+                        //                     } else
+                        //                     {
+                        //                         letActorPrint = true;
+                        //                     }
+                        //                 }
+                        //                 if (IfActormatch == true && letActorPrint == true)
+                        //                 {
+                        //                     <div class="form-check" style="margin-left: 10px;">
+                        //                         <input class="form-check-input" type="checkbox" id="chk-@actorList.Text" name="selectedActors" value="@actorList.Value">
+                        //                         <label class="form-check-label" for="chk-@actorList.Text">@actorList.Text</label>
+                        //                     </div>
+                        //                     IfActormatch = false;
+                        //                 }
+                        //           }
+                        //     }
+                        //     checkActormatch = true;
+                        // } else
+                        // {
+                        //     @foreach (var item in actorListData)
+                        //     {
+                        //         <div class="form-check" style="margin-left: 10px;">
+                        //             <input class="form-check-input" type="checkbox" id="chk-@item.Text" name="selectedActors" value="@item.Value">
+                        //             <label class="form-check-label" for="chk-@item.Text">@item.Text</label>
+                        //         </div>
+                        //     }
+                        // }
+                        
+                            @foreach (var item in actorListData)
+                        {
+                                <div class="form-check" style="margin-left: 10px;">
+                                    <input class="form-check-input" type="checkbox" id="chk-@item.Text" name="selectedActors" value="@item.Value" checked="@item.Selected">
+                                    <label class="form-check-label" for="chk-@item.Text">@item.Text</label>
+                                </div>
+                        }
+                    }
+                
+                    <button style="margin-left: 6px;" type="button" class="btn btn-primary" onclick="actorSubmit()">Submit</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Plot" class="control-label"></label>
+                <input asp-for="Plot" id="Plot" class="form-control" />
+                <span asp-validation-for="Plot" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Poster" class="control-label"></label>
+                <input asp-for="Poster" id="Poster" class="form-control" />
+                <span asp-validation-for="Poster" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" onclick="onSumbitForm()" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script>
+
+    function getSelectedActors() {
+        var selectedActors = [];
+        $("input[name='selectedActors']:checked").each(function () {
+            selectedActors.push(parseInt($(this).val()));
+        });
+        return selectedActors;
+    }
+
+    function actorSubmit() {
+        var selectedActors = getSelectedActors()
+        $("#dropdownMenuButton").text(selectedActors.length > 0 ? selectedActors.length + " actors selected" : "Select Actors");
+    }
+
+    function onSumbitForm() {
+        var selectedActors = getSelectedActors();
+
+        var data = {
+            Name: $("#Name").val(),
+            Plot: $("#Plot").val(),
+            Poster: $("#Poster").val(),
+            ProducerId: $("#ProducerId").val(),
+            ActorIds: selectedActors,
+            Id: $("#MovieId").val()
+        }
+        
+        if (selectedActors.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Movie/CreateWithActors",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log("Successfully sent data to the server.");
+                },
+                error: function (error) {
+                    console.error("Error sending data to the server:", error);
+                }
+            });
+        } else {
+            console.log("No actors selected.");
+        }
+
+        return false;
+    }
+</script>
