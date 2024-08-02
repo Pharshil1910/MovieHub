@@ -18,15 +18,36 @@ namespace WebApplication1.Controllers
         }
         public IActionResult Index()
         {
-            var data = _movieRepository.MovieIndexData();
+            var data = (from p in _context.Producers
+                                   join e in _context.Movies on p.Id equals e.ProducerId
+                                   select new MovieViewModel
+                                   {
+                                       Id = e.Id,
+                                       Name = e.Name,
+                                       Plot = e.Plot,
+                                       Poster = e.Poster,
+                                       ProducerName = p.Name
+                                   }).ToList();
             ViewBag.Data = data;
             return View();
         }
 
         public IActionResult Create()
         {
-            ViewBag.ProducerId = _movieRepository.ListOfProducers();
-            ViewBag.ActorList = _movieRepository.ListOfActors();
+            List<SelectListItem> ProducerData = _context.Producers.Select(x => new SelectListItem()
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            }).ToList();
+
+            List<SelectListItem> actorData = _context.Actors.Select(x => new SelectListItem()
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            }).ToList();
+
+            ViewBag.ProducerId = ProducerData;
+            ViewBag.ActorList = actorData;
 
             return View();
         }
