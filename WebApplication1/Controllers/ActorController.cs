@@ -1,61 +1,59 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
+using WebApplication1.Repository;
 
 namespace WebApplication1.Controllers
 {
     public class ActorController : Controller
     {
-        private readonly FilmIndustryDBContext ActorDb;
+        private readonly IActorRepository _actorRepository = null;
 
-        public ActorController(FilmIndustryDBContext context)
+        public ActorController(IActorRepository _actorRepository)
         {
-            this.ActorDb = context;
+            this._actorRepository = _actorRepository;
         }
 
         public IActionResult Index()
         {
-           var data = ActorDb.Actors.ToList();
+            var data = _actorRepository.ActorLists();
             return View(data);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var actorData = await ActorDb.Actors.FirstOrDefaultAsync(x => x.Id == id);
+            var actorData = _actorRepository.GetActorById(id);
             return View(actorData);
         }
 
         public IActionResult Create()
         {
-            var ActorData = ActorDb.Actors.ToList();
-            ViewBag.ActorList = ActorData;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Actor data)
+        public IActionResult Create(Actor data)
         {
             if (ModelState.IsValid)
             {
-                await ActorDb.Actors.AddAsync(data);
-                await ActorDb.SaveChangesAsync();
+                _actorRepository.AddActor(data);
                 return RedirectToAction("Index", "Actor");
             }
             return View();
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            var actorData = await ActorDb.Actors.FindAsync(id);
+            var actorData = _actorRepository.GetActorById(id);
             return View(actorData);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int? id, Actor data)
+        public IActionResult Edit(int? id, Actor data)
         {
             if (id != data.Id)
             {
@@ -63,30 +61,31 @@ namespace WebApplication1.Controllers
             }
             if (ModelState.IsValid)
             {
-                ActorDb.Actors.Update(data);
-                await ActorDb.SaveChangesAsync();
+                _actorRepository.UpdateActor(data);
                 return RedirectToAction("Index", "Actor");
             }
             return View();
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            var actorData = await ActorDb.Actors.FirstOrDefaultAsync(x => x.Id == id);
+            var actorData = _actorRepository.GetActorById(id);
             return View(actorData);
         }
 
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmation(int? id)
+        public IActionResult DeleteConfirmation(int id)
         {
-            var actorData = await ActorDb.Actors.FindAsync(id);
-            if (actorData == null)
+            if (id != null && id != 0)
+            {
+                _actorRepository.DeleteActor(id);
+                return RedirectToAction("Index", "Actor");
+            } 
+            else
             {
                 return NotFound();
             }
-            ActorDb.Actors.Remove(actorData);
-            await ActorDb.SaveChangesAsync();
-            return RedirectToAction("Index", "Actor");
+            
         }
     }
 }

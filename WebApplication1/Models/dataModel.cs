@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication1.Models
 {
@@ -46,5 +47,14 @@ namespace WebApplication1.Models
         public string? Poster { get; set; }
         public int ProducerId { get; set; }
         public List<int> ActorIds { get; set; }
+    }
+
+    public class ActorsList 
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public Gender Gender { get; set; }
+        public DateTime? Dob { get; set; }
+        public string? Bio { get; set; }
     }
 }

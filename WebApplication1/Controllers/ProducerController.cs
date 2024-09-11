@@ -2,26 +2,27 @@
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
+using WebApplication1.Repository;
 
 namespace WebApplication1.Controllers
 {
     public class ProducerController : Controller
     {
-        private readonly FilmIndustryDBContext ProducerDb;
+        private readonly IProducerRepository _producerRepository = null;
 
-        public ProducerController(FilmIndustryDBContext context)
+        public ProducerController(IProducerRepository _producerRepository)
         {
-            ProducerDb = context;
+            this._producerRepository = _producerRepository;
         }
         public IActionResult Index()
         {
-            var data = ProducerDb.Producers.ToList();
+            var data = _producerRepository.ProducerLists();
             return View(data);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int id)
         {
-            var data = await ProducerDb.Producers.FindAsync(id);
+            var data = _producerRepository.GetProducerById(id);
             return View(data);
         }
 
@@ -31,44 +32,43 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Producer data)
+        public IActionResult Create(Producer data)
         {
-            await ProducerDb.Producers.AddAsync(data);
-            await ProducerDb.SaveChangesAsync();
+            _producerRepository.AddProducer(data);
             return RedirectToAction("Index", "Producer");
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            var data = await ProducerDb.Producers.FindAsync(id); 
+            var data = _producerRepository.GetProducerById(id); 
             return View(data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Producer data)
+        public IActionResult Edit(Producer data)
         {
-            await ProducerDb.Producers.AddAsync(data);
-            await ProducerDb.SaveChangesAsync();
+            _producerRepository.UpdateProducer(data);
             return RedirectToAction("Index", "Producer");
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            var data = await ProducerDb.Producers.FirstOrDefaultAsync(x => x.Id == id);
+            var data = _producerRepository.GetProducerById(id);
             return View(data);
         }
 
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConformation(int? id)
+        public IActionResult DeleteConformation(int id)
         {
-            var data = await ProducerDb.Producers.FindAsync(id);
-            if(data == null)
+            if(id != null && id != 0)
+            {
+                _producerRepository.DeleteProducer(id);
+                return RedirectToAction("Index", "Producer");
+            }
+            else
             {
                 return NotFound();
             }
-            ProducerDb.Producers.Remove(data);
-            await ProducerDb.SaveChangesAsync();
-            return RedirectToAction("Index", "Producer");
         }
     }
 }

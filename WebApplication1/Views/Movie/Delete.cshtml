@@ -57,7 +57,7 @@
     
     @* <form asp-action="DeleteMovie"> *@
         <input type="hidden" asp-for="Id" id="MovieId" />
-        <input type="submit" value="Delete" class="btn btn-danger" onclick="onSumbitForm()" /> |
+        <input type="submit" value="Delete" class="btn btn-danger" onclick="onSumbitForm(); return confirm('Do you want to Delete?')" /> |
         <a asp-action="Index">Back to List</a>
     @* </form> *@
 </div>

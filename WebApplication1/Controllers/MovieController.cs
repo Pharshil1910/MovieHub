@@ -53,23 +53,14 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("Movie/CreateWithActors")]
-        public IActionResult CreateWithActors([FromBody] ActorMovieCommand data)
+        public async Task<IActionResult> CreateWithActors([FromBody] ActorMovieCommand data)
         {
-            if(data != null)
-            {
-                if (data.Id > 0)
-                {
-                    _movieRepository.CreateWithActors(data);
-                    //return StatusCode(200, new { message = "Success" });
-                    return RedirectToAction("Index", "Movie");
-                }
-                else
-                {
-                    _movieRepository.CreateWithActors(data);
 
-                    //return StatusCode(200, new { message = "Success" }); 
-                    return RedirectToAction("Index", "Movie");
-                }
+            if(data != null && ModelState.IsValid)
+            {
+                _movieRepository.CreateWithActors(data);
+                //return StatusCode(200, new { message = "Success" });
+                return RedirectToAction("Index", "Movie");
             } 
             else
             {
@@ -161,35 +152,35 @@ namespace WebApplication1.Controllers
 
         public IActionResult Delete(int? id)
         {
-        if(id != null) { }
-        var movieWithActors = (from m in _context.Movies
-                                where m.Id == id
-                                join p in _context.Producers on m.ProducerId equals p.Id
-                                select new MovieWithActorsModel
-                                {
-                                    Id = m.Id,
-                                    Name = m.Name,
-                                    Plot = m.Plot,
-                                    Poster = m.Poster,
-                                    ProducerName = p.Name,
-                                    ProducerId = p.Id,
-                                    ActorNames = (from ma in _context.MovieActor
-                                                    join a in _context.Actors on ma.ActorId equals a.Id
-                                                    where ma.MovieId == id
-                                                    select a.Name ).ToList()
-                                }).FirstOrDefault();
+            if(id != null) { }
+            var movieWithActors = (from m in _context.Movies
+                                    where m.Id == id
+                                    join p in _context.Producers on m.ProducerId equals p.Id
+                                    select new MovieWithActorsModel
+                                    {
+                                        Id = m.Id,
+                                        Name = m.Name,
+                                        Plot = m.Plot,
+                                        Poster = m.Poster,
+                                        ProducerName = p.Name,
+                                        ProducerId = p.Id,
+                                        ActorNames = (from ma in _context.MovieActor
+                                                        join a in _context.Actors on ma.ActorId equals a.Id
+                                                        where ma.MovieId == id
+                                                        select a.Name ).ToList()
+                                    }).FirstOrDefault();
 
-        ViewBag.Data = movieWithActors;
-        return View();
+            ViewBag.Data = movieWithActors;
+            return View();
 
         }
 
         [HttpPost("Movie/DeleteMovie")]
-        public IActionResult DeleteMovie([FromBody] ActorMovieCommand data)
+        public async Task<IActionResult> DeleteMovie([FromBody] ActorMovieCommand data)
         {
             if(data != null || data.Id != null)
             {
-                var fromDB = _context.Movies.FirstOrDefault(a => a.Id == data.Id);
+                var fromDB = await _context.Movies.FindAsync(data.Id);
             
                 fromDB.Poster = data.Poster;
                 fromDB.Name = data.Name;
@@ -202,11 +193,13 @@ namespace WebApplication1.Controllers
                 var movieActors = _context.MovieActor.Where(a => a.MovieId.Equals(data.Id)).ToList();
 
                 _context.MovieActor.RemoveRange(movieActors);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return RedirectToAction("Index", "Movie");
+            } else
+            {
+                return StatusCode(400, new { message = "Invalid data" }); // Bad Request
             }
-            return StatusCode(400, new { message = "Invalid data" }); // Bad Request
         }
     }
 
