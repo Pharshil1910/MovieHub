@@ -4,10 +4,10 @@ namespace WebApplication1.Repository
 {
     public interface IProducerRepository
     {
-        public List<Producer> ProducerLists();
-        public Producer GetProducerById(int id);
-        public Task AddProducer(Producer data);
-        public Task UpdateProducer(Producer data);
-        public Task DeleteProducer(int id);
+        public Task<List<Producer>> ProducerLists();
+        public Task<Producer> GetProducerById(int id);
+        public Task<Producer> AddProducer(Producer data);
+        public Task<int> UpdateProducer(Producer data);
+        public Task<int> DeleteProducer(int id);
     }
 }

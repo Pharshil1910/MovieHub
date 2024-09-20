@@ -1,9 +1,12 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Core.Types;
+using System.Reflection;
 using WebApplication1.Models;
 using WebApplication1.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
