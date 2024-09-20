@@ -6,10 +6,10 @@ namespace WebApplication1.Repository
 {
     public interface IActorRepository
     {
-        public List<Actor> ActorLists ();
-        public Actor GetActorById(int id);
-        public Task AddActor(Actor data);
-        public Task UpdateActor(Actor data);
-        public Task DeleteActor(int id);
+        public Task<List<Actor>> ActorLists ();
+        public Task<Actor> GetActorById(int id);
+        public Task<Actor> AddActor(Actor data);
+        public Task<int> UpdateActor(Actor data);
+        public Task<int> DeleteActor(int id);
     }
 }
