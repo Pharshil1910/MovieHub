@@ -66,4 +66,7 @@ Feel free to open issues or submit pull requests if you'd like to contribute to 
 ## License
 
 This project is licensed under the MIT License. See `LICENSE` for details.
+
 ```
+This `README.md` includes structured sections to guide users through setup, configuration, and running the application, along with a brief overview of its features and technology stack.
+
