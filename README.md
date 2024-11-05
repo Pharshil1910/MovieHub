@@ -59,10 +59,6 @@ The backend API should be accessible on the specified port (e.g., `https://local
 2. **Add/Update/Delete Movies:** Requires user authentication.
 3. **API Endpoints:** Access available movie-related API endpoints for managing data.
 
-## Contributing
-
-Feel free to open issues or submit pull requests if you'd like to contribute to the project.
-
 ## License
 
 This project is licensed under the MIT License. See `LICENSE` for details.
