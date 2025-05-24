@@ -1,4 +1,5 @@
-﻿using WebApplication1.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models;
 
 namespace WebApplication1.Repository
 {
@@ -11,39 +12,36 @@ namespace WebApplication1.Repository
             this._context = context;
         }
 
-        public List<Actor> ActorLists()
+        public Task<List<Actor>> ActorLists()
         {
-            var data = _context.Actors.ToList();
+            var data = _context.Actors.ToListAsync();
             return data;
         }
 
-        public Actor GetActorById(int id)
+        public Task<Actor> GetActorById(int id)
         {
-            var data = _context.Actors.FirstOrDefault(x => x.Id == id);
+            var data = _context.Actors.FirstOrDefaultAsync(x => x.Id == id);
             return data;
         }
 
-        public async Task AddActor(Actor data)
+        public async Task<Actor> AddActor(Actor data)
         {
-            await _context.Actors.AddAsync(data);
+            var actor = await _context.Actors.AddAsync(data);
             await _context.SaveChangesAsync();
+            return actor.Entity;
         }
 
-        public async Task UpdateActor(Actor data)
+        public async Task<int> UpdateActor(Actor data)
         {
             _context.Actors.Update(data);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteActor(int id)
+        public async Task<int> DeleteActor(int id)
         {
             var actorData = _context.Actors.Find(id);
-            if (actorData != null)
-            {
-                _context.Actors.Remove(actorData);
-                await _context.SaveChangesAsync();
-            }
-
+            _context.Actors.Remove(actorData);
+            return await _context.SaveChangesAsync();
         }
     }
 }

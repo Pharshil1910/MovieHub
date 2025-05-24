@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.Commands;
 using WebApplication1.Models;
 using WebApplication1.Repository;
 
@@ -9,20 +13,22 @@ namespace WebApplication1.Controllers
     public class ProducerController : Controller
     {
         private readonly IProducerRepository _producerRepository = null;
+        private IMediator _mediator;
 
-        public ProducerController(IProducerRepository _producerRepository)
+        public ProducerController(IProducerRepository _producerRepository, IMediator mediator)
         {
             this._producerRepository = _producerRepository;
+            _mediator = mediator;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var data = _producerRepository.ProducerLists();
+            var data = await _mediator.Send(new GetProducerListsQuery());
             return View(data);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var data = _producerRepository.GetProducerById(id);
+            var data = await _mediator.Send(new GetProducerByIdQuery() { Id = id});
             return View(data);
         }
 
@@ -32,15 +38,15 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Producer data)
+        public async Task<IActionResult> Create(Producer data)
         {
-            _producerRepository.AddProducer(data);
+            await _mediator.Send(new CreateProducerCommand(data.Name, data.Gender, data.Dob, data.Bio));
             return RedirectToAction("Index", "Producer");
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var data = _producerRepository.GetProducerById(id); 
+            var data = await _mediator.Send(new GetProducerByIdQuery() { Id = id });
             return View(data);
         }
 
@@ -51,9 +57,9 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index", "Producer");
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var data = _producerRepository.GetProducerById(id);
+            var data = await _mediator.Send(new GetProducerByIdQuery() { Id = id });
             return View(data);
         }
 
