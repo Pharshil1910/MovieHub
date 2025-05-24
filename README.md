@@ -199,7 +199,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Author
 
-- **Harshil Patel** - *Initial work* - [Pharshil1910](https://github.com/Pharshil1910)
+- **Harshil Kalsariya** - *Initial work* - [Pharshil1910](https://github.com/Pharshil1910)
 
 ## 🙏 Acknowledgments
 
